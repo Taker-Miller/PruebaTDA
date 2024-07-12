@@ -1,0 +1,62 @@
+-- Creación de la tabla de usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL UNIQUE,
+    correo VARCHAR(100) NOT NULL,
+    contraseña VARCHAR(100) NOT NULL,
+    rol VARCHAR(50) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    codigo_acceso VARCHAR(10)
+);
+
+-- Creación de la tabla de tiques
+CREATE TABLE IF NOT EXISTS tiques (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_cliente VARCHAR(100) NOT NULL,
+    rut VARCHAR(20) NOT NULL,
+    telefono VARCHAR(15) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    tipo_tique VARCHAR(50) NOT NULL,
+    criticidad VARCHAR(20) NOT NULL,
+    detalle_servicio TEXT NOT NULL,
+    detalle_problema TEXT,
+    area_destino VARCHAR(50),
+    ejecutivo_asignado VARCHAR(100),
+    abierto_por VARCHAR(50) NOT NULL,
+    estado VARCHAR(20) DEFAULT 'Abierto',
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_cierre TIMESTAMP,
+    FOREIGN KEY (abierto_por) REFERENCES usuarios(usuario),
+    FOREIGN KEY (ejecutivo_asignado) REFERENCES usuarios(usuario)
+);
+
+-- Creación de la tabla de observaciones
+CREATE TABLE IF NOT EXISTS observaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_tique INT NOT NULL,
+    observacion TEXT NOT NULL,
+    estado VARCHAR(20) DEFAULT 'Pendiente',
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_tique) REFERENCES tiques(id)
+);
+
+-- Inserción de usuarios de prueba
+INSERT INTO usuarios (usuario, correo, contraseña, rol, codigo_acceso)
+VALUES
+('admin', 'admin@example.com', 'admin123', 'Administrador', '1234'),
+('area1', 'area1@example.com', 'area1123', 'Área', '1234'),
+('tecnico1', 'tecnico1@example.com', 'tecnico1123', 'Técnico de Soporte', '1234'),
+('usuario1', 'usuario1@example.com', 'usuario1123', 'Usuario', NULL);
+
+-- Inserción de tiques de prueba
+INSERT INTO tiques (nombre_cliente, rut, telefono, email, tipo_tique, criticidad, detalle_servicio, abierto_por)
+VALUES
+('Cliente 1', '12345678-9', '987654321', 'cliente1@example.com', 'Consulta', 'Baja', 'Detalle del servicio', 'usuario1'),
+('Cliente 2', '87654321-0', '987654321', 'cliente2@example.com', 'Problema', 'Alta', 'Detalle del servicio', 'usuario1');
+
+-- Inserción de observaciones de prueba
+INSERT INTO observaciones (id_tique, observacion, estado)
+VALUES
+(1, 'Primera observación del tique 1', 'Pendiente'),
+(1, 'Segunda observación del tique 1', 'Resuelto'),
+(2, 'Primera observación del tique 2', 'Pendiente');
